@@ -2,11 +2,16 @@ package Pong;
 
 import processing.core.PApplet;
 
+
 //Source https://gist.github.com/dc74089/4094da7928839063ae06
 public class PongApp extends PApplet {
     float x, y, speedX, speedY;
     float diam = 20;
     float rectSize = 80;
+
+    public static void main(String args[]) {
+        PApplet.main(new String[] { PongApp.class.getName() });
+    }
 
     public void settings() {
         size(640, 360);
