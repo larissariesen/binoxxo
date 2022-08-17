@@ -9,12 +9,11 @@ public class BinoxxoApp extends PApplet {
     // TODO Errorhandling checken
     // TODO verhalten wann Errors angezeigt werden
     // TODO Errors untereinander
-    
     int rect;
     int cellSize;
     char[][] level; // [vertikal] [horziontal]
     char[][] arrayToCheck; // [vertikal] [horziontal]
-    String info = " ";
+    String[] info = {"","","",""};
 
     public static void main(String args[]) {
         PApplet.main(new String[]{BinoxxoApp.class.getName()});
@@ -54,11 +53,13 @@ public class BinoxxoApp extends PApplet {
         }
         textSize(15);
         textAlign(LEFT, BOTTOM);
-        text(info, 20, ((cellSize * rect) + 50));
+        for (int i = 0; i < info.length; i++) {
+            text(info[i], 20, ((cellSize * rect) + (50*i-1)));
+        }
     }
 
     public void mouseClicked(MouseEvent e) {
-        if (!info.contains("Geschafft")) {
+        if (!info[0].contains("Geschafft")) {
             for (int i = 0; i < level.length; i++) {
                 for (int j = 0; j < level[i].length; j++) {
                     if (e.getX() >= 20 + (i * 50) && e.getX() <= 20 + ((i + 1) * 50)
@@ -72,7 +73,7 @@ public class BinoxxoApp extends PApplet {
                 }
             }
         }
-        info = isFinished();
+        checkIfFinished();
         redraw();
     }
 
@@ -134,41 +135,35 @@ public class BinoxxoApp extends PApplet {
         level[9][6] = 'O';
     }
 
-    private String isFinished() {
+    private void checkIfFinished() {
         for (int i = 0; i < level.length; i++) {
             for (int j = 0; j < level[i].length; j++) {
                 arrayToCheck[i][j] = level[i][j];
-                if (level[i][j] == ' ') {
-                    return " ";
+                if (arrayToCheck[i][j] == ' ') {
+                    return;
                 }
             }
         }
-        return errorHandling();
+        errorHandling();
     }
 
-    private String errorHandling() {
-        String info = "";
-        info += checkForThree() + ", ";
-        info += checkForDuplicates() + ", ";
-        info += checkForOddChars();
-        return info;
+    private void errorHandling() {
+        info[1] = checkForThree();
+        info[2] = checkForDuplicates();
+        info[3] = checkForOddChars();
     }
 
-    private String checkForOddChars() {
-        int counterX = 0;
-        int counterY = 0;
-        for (int i = 0; i < level.length; i++) {
-            for (int j = 0; j < level[i].length; j++) {
-                if (level[i][j] == 'x' || level[i][j] == 'X') {
-                    counterX++;
-                } else if (level[i][j] == 'o' || level[i][j] == 'O') {
-                    counterY++;
+    private String checkForThree() {
+        for (int i = 0; i < level.length - 2; i++) {
+            for (int j = 0; j < level[i].length - 2; j++) {
+                if (
+                        arrayToCheck[i][j] == arrayToCheck[i + 1][j] &&
+                                arrayToCheck[i][j] == arrayToCheck[i + 2][j] ||
+                                arrayToCheck[i][j] == arrayToCheck[i][j + 1] &&
+                                        arrayToCheck[i][j] == arrayToCheck[i][j + 2]
+                ) {
+                    return "Es liegen 3 Gleiche nebeneinander";
                 }
-                // Funktioniert nur für quadratische Grids
-                if (counterX < level[i].length || counterY < level[i].length) {
-                    return "Anzahl o und x stimmen nicht überrein";
-                }
-                counterX = 0;
             }
         }
         return "";
@@ -186,20 +181,23 @@ public class BinoxxoApp extends PApplet {
         return "";
     }
 
-    private String checkForThree() {
-        for (int i = 0; i < level.length - 2; i++) {
-            for (int j = 0; j < level[i].length - 2; j++) {
-                if (
-                        arrayToCheck[i][j] == arrayToCheck[i + 1][j] &&
-                                arrayToCheck[i][j] == arrayToCheck[i + 2][j] ||
-                                arrayToCheck[i][j] == arrayToCheck[i][j + 1] &&
-                                        arrayToCheck[i][j] == arrayToCheck[i][j + 2]
-                ) {
-                    return "Es liegen 3 Gleiche nebeneinander";
+    private String checkForOddChars() {
+        int counterX = 0;
+        int counterY = 0;
+        for (int i = 0; i < level.length; i++) {
+            for (int j = 0; j < level[i].length; j++) {
+                if (level[i][j] == 'x' || level[i][j] == 'X') {
+                    counterX++;
+                } else if (level[i][j] == 'o' || level[i][j] == 'O') {
+                    counterY++;
                 }
+                // Funktioniert nur für quadratische Grids
+                if (counterX < level.length || counterY < level[i].length) {
+                    return "Anzahl o und x stimmen nicht überrein";
+                }
+                counterX = 0;
             }
         }
         return "";
-
     }
 }
