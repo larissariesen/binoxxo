@@ -14,4 +14,4 @@ Add Processing Lib:
 select the Processing core.jar
 
 MacOS: /Applications/Processing.app/Contents/Java/core/library/core.jar  
-Windows: 
+Windows: C:\Program Files (x86)\processing-4.0.1\core\library\core.jar  (depending on where you installed Processing)
