@@ -54,6 +54,7 @@ public class BinoxxoApp extends PApplet {
             }
         }
         background(255);
+        image(trash, 40+(50*level.length), 30, 30, 30);
         for (int i = 0; i < level.length; i++) {
             // Begin loop for rows
             for (int j = 0; j < level[i].length; j++) {
@@ -98,6 +99,14 @@ public class BinoxxoApp extends PApplet {
         }
         checkIfFinished();
         redraw();
+    }
+
+    private void resetLevel() {
+        switch (currentLevel) {
+            case 1 -> prepareLevelOne();
+            case 2 -> prepareLevelTwo();
+            case 3 -> prepareLevelThree();
+        }
     }
 
     private void checkIfFinished() {
@@ -275,10 +284,8 @@ public class BinoxxoApp extends PApplet {
         level[7][6] = 'O';
         level[7][8] = 'X';
         level[7][9] = 'O';
-        level[8][0] = 'O';
-        level[8][2] = 'X';
-        level[8][6] = 'O';
-        level[8][8] = 'X';
+        level[8][1] = 'X';
+        level[8][7] = 'X';
         level[8][9] = 'O';
         level[9][3] = 'O';
         level[9][4] = 'X';
