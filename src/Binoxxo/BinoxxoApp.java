@@ -1,6 +1,7 @@
 package Binoxxo;
 
 import processing.core.PApplet;
+import processing.core.PFont;
 import processing.core.PImage;
 import processing.event.MouseEvent;
 
@@ -29,6 +30,7 @@ public class BinoxxoApp extends PApplet {
     int currentLevel = 1;
     String opManual = "1x Click = X -- 2x Click = O -- 3x Click = leeren";
     PImage trash;
+    //PFont myFont;
 
     public static void main(String args[]) {
         PApplet.main(new String[]{BinoxxoApp.class.getName()});
@@ -42,9 +44,12 @@ public class BinoxxoApp extends PApplet {
         surface.setLocation(100, 50);
         fill(0, 255, 0);
         trash = loadImage("data/bin.jpg");
+        //myFont = createFont("data/computo-monospace.otf", 45);
+        textSize(40);
     }
 
     public void draw() {
+        background(255);
         if (rect == 0 || levelState == LevelState.Finished && gameState != GameState.Finished) {
             switch (currentLevel) {
                 case 1 -> prepareLevelOne();
@@ -52,8 +57,8 @@ public class BinoxxoApp extends PApplet {
                 case 3 -> prepareLevelThree();
             }
         }
-        background(255);
         textAlign(LEFT, TOP);
+        //textFont(myFont);
         textSize(30);
         fill(0);
         text("BinoXXo - Level " + currentLevel, spaceLeft   , 5);
