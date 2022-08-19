@@ -11,6 +11,7 @@ public class BinoxxoApp extends PApplet {
         Running,
         Finished
     }
+
     private enum LevelState {
         Running,
         Finished,
@@ -55,7 +56,7 @@ public class BinoxxoApp extends PApplet {
         textAlign(LEFT, TOP);
         textSize(30);
         fill(0);
-        text("BinoXXo - Level "+ currentLevel, 15, 5);
+        text("BinoXXo - Level " + currentLevel, 15, 5);
         textSize(15);
         text(opManual, spaceLeft, 40);
         image(trash, 40 + (cellSize * level.length), yAxisTrash, 30, 30);
@@ -82,7 +83,7 @@ public class BinoxxoApp extends PApplet {
             if (rules[i].getState())
                 colorR = 255;
             fill(colorR, 0, 0);
-            text(rules[i].rule, spaceLeft, (80 + (50*level.length)+(i*20)));
+            text(rules[i].rule, spaceLeft, (80 + (50 * level.length) + (i * 20)));
         }
     }
 
