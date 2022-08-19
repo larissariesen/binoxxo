@@ -4,10 +4,7 @@ import processing.core.PApplet;
 import processing.core.PImage;
 import processing.event.MouseEvent;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class BinoxxoApp extends PApplet {
     private enum GameState {
@@ -18,16 +15,18 @@ public class BinoxxoApp extends PApplet {
         Running,
         Finished,
     }
+
     LevelState levelState = LevelState.Running;
     GameState gameState = GameState.Running;
 
+    int spaceLeft = 20;
+    int yAxisTrash = 75;
+    int yAxisGrid = 70;
     int rect = 0;
-    int cellSize;
+    int cellSize = 50;
     char[][] level; // [vertikal] [horziontal]
-    String rules = "Es liegen 3 Gleiche nebeneinander \n" +
-            " Zwei Spalten oder Zeilen sind gleich \n " +
-            "Anzahl o und x stimmen nicht überrein";
     int currentLevel = 1;
+    String opManual = "1x Click = X -- 2x Click = O -- 3x Click = leeren";
     PImage trash;
 
     public static void main(String args[]) {
@@ -41,7 +40,6 @@ public class BinoxxoApp extends PApplet {
     public void setup() {
         surface.setLocation(100, 100);
         fill(0, 255, 0);
-        cellSize = 50;
         trash = loadImage("data/bin.jpg");
     }
 
@@ -54,15 +52,20 @@ public class BinoxxoApp extends PApplet {
             }
         }
         background(255);
-        image(trash, 40+(50*level.length), 30, 30, 30);
+        textAlign(LEFT, TOP);
+        textSize(30);
+        fill(0);
+        text("BinoXXo - Level "+ currentLevel, 15, 5);
+        textSize(15);
+        text(opManual, spaceLeft, 40);
+        image(trash, 40 + (cellSize * level.length), yAxisTrash, 30, 30);
         for (int i = 0; i < level.length; i++) {
             // Begin loop for rows
             for (int j = 0; j < level[i].length; j++) {
                 // Scaling up to draw a rectangle at (x,y)
-                int x = (cellSize * i) + 20;
-                int y = (cellSize * j) + 20;
+                int x = (cellSize * i) + spaceLeft;
+                int y = (cellSize * j) + yAxisGrid;
                 stroke(0);
-                fill(0);
                 textSize(50);
                 textAlign(CENTER, CENTER);
                 text(level[i][j], x + 25, y + 15);
@@ -71,18 +74,24 @@ public class BinoxxoApp extends PApplet {
                 rect(x, y, cellSize, cellSize);
             }
         }
+        Rules[] rules = Rules.values();
         textSize(15);
         textAlign(LEFT, TOP);
-        // TODO - show mini Anleitung
-        text(rules, 20, ((cellSize * rect) + 50));
+        for (int i = 0; i < rules.length; i++) {
+            float colorR = 0;
+            if (rules[i].getState())
+                colorR = 255;
+            fill(colorR, 0, 0);
+            text(rules[i].rule, spaceLeft, (80 + (50*level.length)+(i*20)));
+        }
     }
 
     public void mouseClicked(MouseEvent e) {
         if (levelState == LevelState.Running) {
             for (int i = 0; i < level.length; i++) {
                 for (int j = 0; j < level[i].length; j++) {
-                    if (e.getX() >= 20 + (i * 50) && e.getX() <= 20 + ((i + 1) * 50)
-                            && e.getY() >= 20 + (j * 50) && e.getY() <= 20 + ((j + 1) * 50)) {
+                    if (e.getX() >= spaceLeft + (i * cellSize) && e.getX() <= spaceLeft + ((i + 1) * cellSize)
+                            && e.getY() >= yAxisGrid + (j * cellSize) && e.getY() <= yAxisGrid + ((j + 1) * cellSize)) {
                         switch (level[i][j]) {
                             case 'x' -> level[i][j] = 'o';
                             case 'o' -> level[i][j] = ' ';
@@ -92,9 +101,9 @@ public class BinoxxoApp extends PApplet {
                 }
             }
         }
-        if (e.getX() >= 40+(50*level.length) &&
-                e.getX() <= 70+(50*level.length) &&
-                e.getY() >= 30 && e.getY() <= 70){
+        if (e.getX() >= 40 + (cellSize * level.length) &&
+                e.getX() <= 70 + (cellSize * level.length) &&
+                e.getY() >= yAxisTrash && e.getY() <= 105) {
             resetLevel();
         }
         checkIfFinished();
@@ -102,6 +111,7 @@ public class BinoxxoApp extends PApplet {
     }
 
     private void resetLevel() {
+        Rules.resetStates();
         switch (currentLevel) {
             case 1 -> prepareLevelOne();
             case 2 -> prepareLevelTwo();
@@ -110,37 +120,31 @@ public class BinoxxoApp extends PApplet {
     }
 
     private void checkIfFinished() {
-        for (int i = 0; i < level.length; i++) {
-            for (int j = 0; j < level[i].length; j++) {
-                if (level[i][j] == ' ') {
-                    rules = "";
+        for (char[] column : level) {
+            for (char row : column) {
+                if (row == ' ') {
+                    Rules.resetStates();
                     return;
                 }
             }
         }
-        if (errorHandling().length() > 0)
-            rules = errorHandling();
-        else {
+        errorHandling();
+        if (Rules.noneActive()) {
             levelState = LevelState.Finished;
-            if(currentLevel < 3) {
-                rules = "Geschafft, hier das nächste Level";
+            Rules.resetStates();
+            if (currentLevel < 3) {
                 currentLevel++;
             } else {
-                rules = "Alle Levels geschafft :D";
                 gameState = GameState.Finished;
             }
         }
+
     }
 
-    private String errorHandling() {
-        List<String> errorMessages = new ArrayList<>();
-        if (checkForThree())
-            errorMessages.add("Es liegen 3 Gleiche nebeneinander");
-        if (checkForDuplicates())
-            errorMessages.add("Zwei Spalten oder Zeilen sind gleich");
-        if (checkForOddChars())
-            errorMessages.add("Anzahl o und x stimmen nicht überrein");
-        return errorMessages.stream().collect(Collectors.joining("\n"));
+    private void errorHandling() {
+        Rules.THREE.setState(checkForThree());
+        Rules.IDENTICAL.setState(checkForDuplicates());
+        Rules.EVEN.setState(checkForOddChars());
     }
 
     private boolean checkForThree() {
@@ -180,11 +184,11 @@ public class BinoxxoApp extends PApplet {
             for (int j = 0; j < level[i].length; j++) {
                 rowBuilder.append(level[j][i]);
             }
-            if (Arrays.stream(arrY).anyMatch(column::equals)) {
+            if (Arrays.asList(arrY).contains(column)) {
                 return true;
             }
             String row = rowBuilder.toString().toLowerCase();
-            if (Arrays.stream(arrX).anyMatch(row::equals)) {
+            if (Arrays.asList(arrX).contains(row)) {
                 return true;
             }
             arrY[i] = column;
@@ -221,7 +225,7 @@ public class BinoxxoApp extends PApplet {
     }
 
     private void prepareLevelOne() {
-        surface.setSize(300, 350);
+        surface.setSize(400, 400);
         rect = 4;
         level = new char[rect][rect];
         fillArrayEmpty();
@@ -236,7 +240,7 @@ public class BinoxxoApp extends PApplet {
     }
 
     private void prepareLevelTwo() {
-        surface.setSize(400, 450);
+        surface.setSize(450, 500);
         rect = 6;
         level = new char[rect][rect];
         fillArrayEmpty();
@@ -252,7 +256,7 @@ public class BinoxxoApp extends PApplet {
     }
 
     private void prepareLevelThree() {
-        surface.setSize(500, 550);
+        surface.setSize(550, 600);
         rect = 10;
         level = new char[rect][rect];
         fillArrayEmpty();
