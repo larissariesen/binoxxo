@@ -35,7 +35,7 @@ public class BinoxxoApp extends PApplet {
     }
 
     public void settings() {
-        size(100, 100);
+        size(380, 380);
     }
 
     public void setup() {
@@ -97,8 +97,8 @@ public class BinoxxoApp extends PApplet {
         if (levelState == LevelState.Running) {
             for (int i = 0; i < level.length; i++) {
                 for (int j = 0; j < level[i].length; j++) {
-                    if (e.getX() >= spaceLeft + (i * cellSize) && e.getX() <= spaceLeft + ((i + 1) * cellSize)
-                            && e.getY() >= yAxisGrid + (j * cellSize) && e.getY() <= yAxisGrid + ((j + 1) * cellSize)) {
+                    if (e.getX() > spaceLeft + (i * cellSize) && e.getX() < spaceLeft + ((i + 1) * cellSize)
+                            && e.getY() > yAxisGrid + (j * cellSize) && e.getY() < yAxisGrid + ((j + 1) * cellSize)) {
                         switch (level[i][j]) {
                             case 'x' -> level[i][j] = 'o';
                             case 'o' -> level[i][j] = ' ';
@@ -108,9 +108,9 @@ public class BinoxxoApp extends PApplet {
                 }
             }
         }
-        if (e.getX() >= 40 + (cellSize * level.length) &&
-                e.getX() <= 60 + (cellSize * level.length) &&
-                e.getY() >= yAxisTrash && e.getY() <= 100) {
+        if (e.getX() > 40 + (cellSize * level.length) &&
+                e.getX() < 60 + (cellSize * level.length) &&
+                e.getY() > yAxisTrash && e.getY() < 115) {
             resetLevel();
         }
         checkIfFinished();
