@@ -21,10 +21,10 @@ public class BinoxxoApp extends PApplet {
     GameState gameState = GameState.Running;
 
     int spaceLeft = 20;
-    int yAxisTrash = 75;
-    int yAxisGrid = 70;
+    int yAxisTrash = 95;
+    int yAxisGrid = 90;
     int rect = 0;
-    int cellSize = 50;
+    int cellSize = 35;
     char[][] level; // [vertikal] [horziontal]
     int currentLevel = 1;
     String opManual = "1x Click = X -- 2x Click = O -- 3x Click = leeren";
@@ -39,7 +39,7 @@ public class BinoxxoApp extends PApplet {
     }
 
     public void setup() {
-        surface.setLocation(100, 100);
+        surface.setLocation(100, 50);
         fill(0, 255, 0);
         trash = loadImage("data/bin.jpg");
     }
@@ -56,10 +56,10 @@ public class BinoxxoApp extends PApplet {
         textAlign(LEFT, TOP);
         textSize(30);
         fill(0);
-        text("BinoXXo - Level " + currentLevel, 15, 5);
+        text("BinoXXo - Level " + currentLevel, spaceLeft   , 5);
         textSize(15);
-        text(opManual, spaceLeft, 40);
-        image(trash, 40 + (cellSize * level.length), yAxisTrash, 30, 30);
+        text(opManual, spaceLeft, 45);
+        image(trash, 40 + (cellSize * level.length), yAxisTrash, 20, 20);
         for (int i = 0; i < level.length; i++) {
             // Begin loop for rows
             for (int j = 0; j < level[i].length; j++) {
@@ -67,15 +67,20 @@ public class BinoxxoApp extends PApplet {
                 int x = (cellSize * i) + spaceLeft;
                 int y = (cellSize * j) + yAxisGrid;
                 stroke(0);
-                textSize(50);
-                textAlign(CENTER, CENTER);
-                text(level[i][j], x + 25, y + 15);
-                // For every column and row, a rectangle is drawn at an (x,y) location.
                 noFill();
+                if(level[i][j] == 'X' || level[i][j] == 'O') {
+                    fill(190, 190, 190);
+                }
+                // For every column and row, a rectangle is drawn at an (x,y) location.
                 rect(x, y, cellSize, cellSize);
+                fill(0);
+                textSize(30);
+                textAlign(CENTER, CENTER);
+                text(level[i][j], x+18, y+12);
             }
         }
         Rules[] rules = Rules.values();
+        fill(0);
         textSize(15);
         textAlign(LEFT, TOP);
         for (int i = 0; i < rules.length; i++) {
@@ -83,7 +88,7 @@ public class BinoxxoApp extends PApplet {
             if (rules[i].getState())
                 colorR = 255;
             fill(colorR, 0, 0);
-            text(rules[i].rule, spaceLeft, (80 + (50 * level.length) + (i * 20)));
+            text(rules[i].rule, spaceLeft, (120 + (cellSize * level.length) + (i * 20)));
         }
     }
 
@@ -103,8 +108,8 @@ public class BinoxxoApp extends PApplet {
             }
         }
         if (e.getX() >= 40 + (cellSize * level.length) &&
-                e.getX() <= 70 + (cellSize * level.length) &&
-                e.getY() >= yAxisTrash && e.getY() <= 105) {
+                e.getX() <= 60 + (cellSize * level.length) &&
+                e.getY() >= yAxisTrash && e.getY() <= 100) {
             resetLevel();
         }
         checkIfFinished();
@@ -226,7 +231,7 @@ public class BinoxxoApp extends PApplet {
     }
 
     private void prepareLevelOne() {
-        surface.setSize(400, 400);
+        surface.setSize(400, 350);
         rect = 4;
         level = new char[rect][rect];
         fillArrayEmpty();
@@ -241,7 +246,7 @@ public class BinoxxoApp extends PApplet {
     }
 
     private void prepareLevelTwo() {
-        surface.setSize(450, 500);
+        surface.setSize(400, 400);
         rect = 6;
         level = new char[rect][rect];
         fillArrayEmpty();
@@ -257,7 +262,7 @@ public class BinoxxoApp extends PApplet {
     }
 
     private void prepareLevelThree() {
-        surface.setSize(550, 600);
+        surface.setSize(450, 550);
         rect = 10;
         level = new char[rect][rect];
         fillArrayEmpty();
