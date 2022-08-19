@@ -29,6 +29,7 @@ public class BinoxxoApp extends PApplet {
     int currentLevel = 1;
     String opManual = "1x Click = X -- 2x Click = O -- 3x Click = leeren";
     PImage trash;
+    PImage party;
 
     public static void main(String args[]) {
         PApplet.main(new String[]{BinoxxoApp.class.getName()});
@@ -42,54 +43,61 @@ public class BinoxxoApp extends PApplet {
         surface.setLocation(100, 50);
         fill(0, 255, 0);
         trash = loadImage("data/bin.jpg");
+        party = loadImage("data/noDramaLama.jpg");
         textSize(40);
     }
 
     public void draw() {
         background(255);
-        if (rect == 0 || levelState == LevelState.Finished && gameState != GameState.Finished) {
-            switch (currentLevel) {
-                case 1 -> prepareLevelOne();
-                case 2 -> prepareLevelTwo();
-                case 3 -> prepareLevelThree();
-            }
-        }
-        textAlign(LEFT, TOP);
-        textSize(30);
-        fill(0);
-        text("BinoXXo - Level " + currentLevel, spaceLeft   , 5);
-        textSize(15);
-        text(opManual, spaceLeft, 45);
-        image(trash, 40 + (cellSize * level.length), yAxisTrash, 20, 20);
-        for (int i = 0; i < level.length; i++) {
-            // Begin loop for rows
-            for (int j = 0; j < level[i].length; j++) {
-                // Scaling up to draw a rectangle at (x,y)
-                int x = (cellSize * i) + spaceLeft;
-                int y = (cellSize * j) + yAxisGrid;
-                stroke(0);
-                noFill();
-                if(level[i][j] == 'X' || level[i][j] == 'O') {
-                    fill(190, 190, 190);
+        if (gameState != GameState.Finished) {
+            if (rect == 0 || levelState == LevelState.Finished) {
+                switch (currentLevel) {
+                    case 1 -> prepareLevelOne();
+                    case 2 -> prepareLevelTwo();
+                    case 3 -> prepareLevelThree();
                 }
-                // For every column and row, a rectangle is drawn at an (x,y) location.
-                rect(x, y, cellSize, cellSize);
-                fill(0);
-                textSize(30);
-                textAlign(CENTER, CENTER);
-                text(level[i][j], x+18, y+12);
             }
-        }
-        Rules[] rules = Rules.values();
-        fill(0);
-        textSize(15);
-        textAlign(LEFT, TOP);
-        for (int i = 0; i < rules.length; i++) {
-            float colorR = 0;
-            if (rules[i].getState())
-                colorR = 255;
-            fill(colorR, 0, 0);
-            text(rules[i].rule, spaceLeft, (120 + (cellSize * level.length) + (i * 20)));
+
+            textAlign(LEFT, TOP);
+            textSize(30);
+            fill(0);
+            text("BinoXXo - Level " + currentLevel, spaceLeft, 5);
+            textSize(15);
+            text(opManual, spaceLeft, 45);
+            image(trash, 40 + (cellSize * level.length), yAxisTrash, 20, 20);
+            //draw Grid
+            for (int i = 0; i < level.length; i++) {
+                // Begin loop for rows
+                for (int j = 0; j < level[i].length; j++) {
+                    // Scaling up to draw a rectangle at (x,y)
+                    int x = (cellSize * i) + spaceLeft;
+                    int y = (cellSize * j) + yAxisGrid;
+                    stroke(0);
+                    noFill();
+                    if (level[i][j] == 'X' || level[i][j] == 'O') {
+                        fill(190, 190, 190);
+                    }
+                    // For every column and row, a rectangle is drawn at an (x,y) location.
+                    rect(x, y, cellSize, cellSize);
+                    fill(0);
+                    textSize(30);
+                    textAlign(CENTER, CENTER);
+                    text(level[i][j], x + 18, y + 12);
+                }
+            }
+            Rules[] rules = Rules.values();
+            fill(0);
+            textSize(15);
+            textAlign(LEFT, TOP);
+            for (int i = 0; i < rules.length; i++) {
+                float colorR = 0;
+                if (rules[i].getState())
+                    colorR = 255;
+                fill(colorR, 0, 0);
+                text(rules[i].rule, spaceLeft, (120 + (cellSize * level.length) + (i * 20)));
+            }
+        } else {
+            image(party, spaceLeft, spaceLeft, 400, 400);
         }
     }
 
